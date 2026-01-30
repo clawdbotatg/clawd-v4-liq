@@ -1,83 +1,58 @@
-# 🏗 Scaffold-ETH 2
+# 🦞 CLAWD V4 Liquidity
 
-<h4 align="center">
-  <a href="https://docs.scaffoldeth.io">Documentation</a> |
-  <a href="https://scaffoldeth.io">Website</a>
-</h4>
+**Manage Uniswap V4 liquidity positions for $CLAWD/WETH on Base.**
 
-🧪 An open-source, up-to-date toolkit for building decentralized applications (dapps) on the Ethereum blockchain. It's designed to make it easier for developers to create and deploy smart contracts and build user interfaces that interact with those contracts.
+🌐 **Live:** [liq.clawdbotatg.eth.limo](https://liq.clawdbotatg.eth.limo)
 
-> [!NOTE]
-> 🤖 Scaffold-ETH 2 is AI-ready! It has everything agents need to build on Ethereum. Check `.agents/`, `.claude/`, `.opencode` or `.cursor/` for more info.
+---
 
-⚙️ Built using NextJS, RainbowKit, Foundry, Wagmi, Viem, and Typescript.
+## What It Does
 
-- ✅ **Contract Hot Reload**: Your frontend auto-adapts to your smart contract as you edit it.
-- 🪝 **[Custom hooks](https://docs.scaffoldeth.io/hooks/)**: Collection of React hooks wrapper around [wagmi](https://wagmi.sh/) to simplify interactions with smart contracts with typescript autocompletion.
-- 🧱 [**Components**](https://docs.scaffoldeth.io/components/): Collection of common web3 components to quickly build your frontend.
-- 🔥 **Burner Wallet & Local Faucet**: Quickly test your application with a burner wallet and local faucet.
-- 🔐 **Integration with Wallet Providers**: Connect to different wallet providers and interact with the Ethereum network.
+- **Pool Dashboard** — Live CLAWD/WETH V4 pool info (price, TVL, current tick, fee tier)
+- **Add Liquidity** — Mint new V4 LP positions with customizable price ranges (Full, Wide, Narrow, Custom)
+- **View Positions** — See all your CLAWD/WETH V4 LP NFTs with token amounts and USD values
+- **Remove Liquidity** — Decrease or fully remove liquidity from existing positions (with slider for partial removal)
+- **Permit2 Flow** — Full 4-step approval flow (CLAWD→Permit2, WETH→Permit2, Permit2→POSM for each)
 
-![Debug Contracts tab](https://github.com/scaffold-eth/scaffold-eth-2/assets/55535804/b237af0c-5027-4849-a5c1-2e31495cccb1)
+## Key Addresses
 
-## Requirements
+| Contract | Address |
+|----------|---------|
+| $CLAWD Token | [`0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07`](https://basescan.org/address/0x9f86dB9fc6f7c9408e8Fda3Ff8ce4e78ac7a6b07) |
+| CLAWD/WETH V4 Pool | [`0x9fd58e...`](https://app.uniswap.org/explore/pools/base/0x9fd58e73d8047cb14ac540acd141d3fc1a41fb6252d674b730faf62fe24aa8ce) |
+| V4 PositionManager | [`0x7c5f5a4bbd8fd63184577525326123b519429bdc`](https://basescan.org/address/0x7c5f5a4bbd8fd63184577525326123b519429bdc) |
+| StateView | [`0xa3c0c9b65bad0b08107aa264b0f3db444b867a71`](https://basescan.org/address/0xa3c0c9b65bad0b08107aa264b0f3db444b867a71) |
 
-Before you begin, you need to install the following tools:
+## Quick Start
 
-- [Node (>= v20.18.3)](https://nodejs.org/en/download/)
-- Yarn ([v1](https://classic.yarnpkg.com/en/docs/install/) or [v2+](https://yarnpkg.com/getting-started/install))
-- [Git](https://git-scm.com/downloads)
-
-## Quickstart
-
-To get started with Scaffold-ETH 2, follow the steps below:
-
-1. Install dependencies if it was skipped in CLI:
-
-```
-cd my-dapp-example
+```bash
+git clone https://github.com/clawdbotatg/clawd-v4-liq.git
+cd clawd-v4-liq
 yarn install
-```
-
-2. Run a local network in the first terminal:
-
-```
-yarn chain
-```
-
-This command starts a local Ethereum network using Foundry. The network runs on your local machine and can be used for testing and development. You can customize the network configuration in `packages/foundry/foundry.toml`.
-
-3. On a second terminal, deploy the test contract:
-
-```
-yarn deploy
-```
-
-This command deploys a test smart contract to the local network. The contract is located in `packages/foundry/contracts` and can be modified to suit your needs. The `yarn deploy` command uses the deploy script located in `packages/foundry/script` to deploy the contract to the network. You can also customize the deploy script.
-
-4. On a third terminal, start your NextJS app:
-
-```
 yarn start
 ```
 
-Visit your app on: `http://localhost:3000`. You can interact with your smart contract using the `Debug Contracts` page. You can tweak the app config in `packages/nextjs/scaffold.config.ts`.
+Open [http://localhost:3000](http://localhost:3000) — connect wallet on Base network.
 
-Run smart contract test with `yarn foundry:test`
+## Stack
 
-- Edit your smart contracts in `packages/foundry/contracts`
-- Edit your frontend homepage at `packages/nextjs/app/page.tsx`. For guidance on [routing](https://nextjs.org/docs/app/building-your-application/routing/defining-routes) and configuring [pages/layouts](https://nextjs.org/docs/app/building-your-application/routing/pages-and-layouts) checkout the Next.js documentation.
-- Edit your deployment scripts in `packages/foundry/script`
+- [Scaffold-ETH 2](https://scaffoldeth.io) — React + Next.js + wagmi + viem
+- Uniswap V4 on Base — PositionManager, StateView, Permit2
+- DexScreener API — Live CLAWD pricing
+- IPFS + ENS — Decentralized hosting
 
+## How V4 Liquidity Works
 
-## Documentation
+Uniswap V4 uses **concentrated liquidity** — you choose a price range for your position. Narrower ranges earn more fees when the price stays in range, but go out of range more easily.
 
-Visit our [docs](https://docs.scaffoldeth.io) to learn how to start building with Scaffold-ETH 2.
+**Approval Flow:** V4 uses Permit2 for token approvals:
+1. Approve CLAWD → Permit2
+2. Approve WETH → Permit2  
+3. Permit2 CLAWD → PositionManager
+4. Permit2 WETH → PositionManager
 
-To know more about its features, check out our [website](https://scaffoldeth.io).
+Then you can mint a position with your chosen tick range and amounts.
 
-## Contributing to Scaffold-ETH 2
+---
 
-We welcome contributions to Scaffold-ETH 2!
-
-Please see [CONTRIBUTING.MD](https://github.com/scaffold-eth/scaffold-eth-2/blob/main/CONTRIBUTING.md) for more information and guidelines for contributing to Scaffold-ETH 2.
+Built by [@clawdbotatg](https://warpcast.com/clawdbotatg) 🦞
