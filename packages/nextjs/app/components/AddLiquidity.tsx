@@ -284,11 +284,13 @@ export function AddLiquidity({ ethPrice, clawdPrice }: AddLiquidityProps) {
     setIsApprovingClawdToPermit2(true);
     setError("");
     try {
+      // Approve EXACT amount (with 5% buffer for slippage) — NEVER unlimited
+      const approveAmount = clawdAmountWei + (clawdAmountWei * BigInt(5)) / BigInt(100);
       await writeContractAsync({
         address: CLAWD_TOKEN,
         abi: erc20Abi,
         functionName: "approve",
-        args: [PERMIT2, maxUint256],
+        args: [PERMIT2, approveAmount],
       });
       // Wait a bit then refetch
       setTimeout(() => refetchClawdAllowance(), 3000);
@@ -303,11 +305,13 @@ export function AddLiquidity({ ethPrice, clawdPrice }: AddLiquidityProps) {
     setIsApprovingWethToPermit2(true);
     setError("");
     try {
+      // Approve EXACT amount (with 5% buffer for slippage) — NEVER unlimited
+      const approveAmount = ethAmountWei + (ethAmountWei * BigInt(5)) / BigInt(100);
       await writeContractAsync({
         address: WETH_TOKEN,
         abi: erc20Abi,
         functionName: "approve",
-        args: [PERMIT2, maxUint256],
+        args: [PERMIT2, approveAmount],
       });
       setTimeout(() => refetchWethAllowance(), 3000);
     } catch (e: any) {
@@ -322,11 +326,15 @@ export function AddLiquidity({ ethPrice, clawdPrice }: AddLiquidityProps) {
     setError("");
     try {
       const expiration = Math.floor(Date.now() / 1000) + 86400 * 30; // 30 days
+      // Approve EXACT amount (with 5% buffer) — NEVER unlimited
+      const approveAmount = clawdAmountWei + (clawdAmountWei * BigInt(5)) / BigInt(100);
+      // Permit2 uses uint160 for amount — cap to uint160 max if needed
+      const permit2Amount = approveAmount > maxUint160 ? maxUint160 : approveAmount;
       await writeContractAsync({
         address: PERMIT2,
         abi: permit2Abi,
         functionName: "approve",
-        args: [CLAWD_TOKEN, POSITION_MANAGER, maxUint160, expiration],
+        args: [CLAWD_TOKEN, POSITION_MANAGER, permit2Amount, expiration],
       });
       setTimeout(() => refetchPermit2Clawd(), 3000);
     } catch (e: any) {
@@ -341,11 +349,14 @@ export function AddLiquidity({ ethPrice, clawdPrice }: AddLiquidityProps) {
     setError("");
     try {
       const expiration = Math.floor(Date.now() / 1000) + 86400 * 30;
+      // Approve EXACT amount (with 5% buffer) — NEVER unlimited
+      const approveAmount = ethAmountWei + (ethAmountWei * BigInt(5)) / BigInt(100);
+      const permit2Amount = approveAmount > maxUint160 ? maxUint160 : approveAmount;
       await writeContractAsync({
         address: PERMIT2,
         abi: permit2Abi,
         functionName: "approve",
-        args: [WETH_TOKEN, POSITION_MANAGER, maxUint160, expiration],
+        args: [WETH_TOKEN, POSITION_MANAGER, permit2Amount, expiration],
       });
       setTimeout(() => refetchPermit2Weth(), 3000);
     } catch (e: any) {
