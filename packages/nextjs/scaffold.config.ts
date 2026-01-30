@@ -24,7 +24,7 @@ const scaffoldConfig = {
     [chains.mainnet.id]: "https://eth-mainnet.g.alchemy.com/v2/8GVG8WjDs-sGFRr6Rm839",
   },
   walletConnectProjectId: process.env.NEXT_PUBLIC_WALLET_CONNECT_PROJECT_ID || '3a8170812b534d0ff9d794f19a901d64',
-  onlyLocalBurnerWallet: false,
+  onlyLocalBurnerWallet: true,
 } as const satisfies ScaffoldConfig;
 
 export default scaffoldConfig;
